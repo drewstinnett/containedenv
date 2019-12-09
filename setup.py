@@ -11,7 +11,7 @@ with open('requirements.txt') as requirements_file:
 
 setup(
     name="containedenv",
-    version="0.0.2",
+    version="0.0.3",
     author="Drew Stinnett",
     author_email="drew@drewlink.com",
     description=("Helper scripts for writing configuration files based on "

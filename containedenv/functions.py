@@ -4,6 +4,29 @@ import configparser
 import json
 
 
+def merge(source, destination):
+    """
+    https://stackoverflow.com/questions/20656135/python-deep-merge-dictionary-data
+
+    run me with nosetests --with-doctest file.py
+
+
+    >>> a = { 'first' : { 'all_rows' : { 'pass' : 'dog', 'number' : '1' } } }
+    >>> b = { 'first' : { 'all_rows' : { 'fail' : 'cat', 'number' : '5' } } }
+    >>> merge(b, a) == { 'first' : { 'all_rows' : { 'pass' : 'dog', 'fail' : 'cat', 'number' : '5' } } }
+    True
+    """
+    for key, value in source.items():
+        if isinstance(value, dict):
+            # get node or create one
+            node = destination.setdefault(key, {})
+            merge(value, node)
+        else:
+            destination[key] = value
+
+    return destination
+
+
 def get_appropriate_env_vars(prefix):
     """
     Given a prefix, return all applicable environment variables as a dict
@@ -75,11 +98,13 @@ def parse_env(*args, **kwargs):
 
     # Now overwrite with what we loaded from the env
     new_config = convert_vars_to_dict(environment_vars)
-    existing_config.update(new_config)
 
+    #   existing_config.update(new_config)
     # Unsure if this is really needed but...
-    final_config_values = existing_config
-    del (existing_config)
+    #   final_config_values = existing_config
+    #   del (existing_config)
+
+    final_config_values = merge(new_config, existing_config)
 
     if cfg_type == 'ini':
         write_ini_output_file(final_config_values, output_file)
